@@ -1,0 +1,68 @@
+--TASK 1
+SELECT first_name, last_name, department_id
+FROM HR.EMPLOYEES
+WHERE department_id IN (
+    SELECT department_id
+    FROM HR.DEPARTMENTS
+    WHERE department_name IN ('Marketing', 'Purchasing', 'IT')
+)
+SELECT E.FIRST_NAME , E.LAST_NAME , E.DEPARTMENT_ID
+FROM HR.EMPLOYEES E
+WHERE EXISTS(
+    SELECT 1 FROM HR.DEPARTMENTS D
+    WHERE D.department_id = E.department_id AND D.department_name IN ('Marketing', 'Purchasing', 'IT')
+)
+--TASK 2
+SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME
+FROM HR.EMPLOYEES M 
+WHERE EXISTS(SELECT 1 FROM HR.EMPLOYEES E 
+             WHERE E.MANAGER_ID=M.EMPLOYEE_ID)
+--TASK 3
+SELECT 
+    TO_CHAR(TO_DATE('2026/12/31', 'YYYY/MM/DD'), 'DD.MM.YYYY HH24:MI') AS a,
+    TO_CHAR(TO_DATE('31-12-2026 23:59', 'DD-MM-YYYY HH24:MI'), 'DD.MM.YYYY HH24:MI') AS b,
+    TO_CHAR(TO_DATE('20261231', 'YYYYMMDD'), 'DD.MM.YYYY HH24:MI') AS c,
+    TO_CHAR(TO_DATE('December 31, 2026', 'Month DD, YYYY', 'NLS_DATE_LANGUAGE=ENGLISH'), 'DD.MM.YYYY HH24:MI') AS d,
+    TO_CHAR(TO_DATE('2026@12@31  08:30', 'YYYY@MM@DD  HH24:MI'), 'DD.MM.YYYY HH24:MI') AS e
+FROM dual;--HH24:MI  SAAT VERILENDE ISLEYIR BELE NORMALDA SAAT 00;00 GOTURUR
+--TASK 4
+SELECT first_name, last_name, hire_date
+FROM hr.employees
+WHERE hire_date >= DATE '2008-01-01'
+ORDER BY hire_date ASC;
+------
+SELECT first_name, last_name, hire_date
+FROM hr.employees
+WHERE hire_date >= TO_DATE('01.01.2008', 'DD.MM.YYYY')
+ORDER BY hire_date ASC;
+--task 5
+select e.employee_id, e.first_name, e.last_name, e.department_id
+from hr.employees e
+where not exists (
+    select 1
+    from hr.departments d
+    where d.department_id = e.department_id
+);--1 cunki nullari sayir
+
+SELECT e.employee_id, e.first_name, e.last_name, e.department_id
+FROM hr.employees e
+WHERE e.department_id NOT IN (
+    SELECT d.department_id
+    FROM hr.departments d
+);--0 cunki nullari saymir
+--task  6
+SELECT employee_id, first_name, last_name
+FROM hr.employees
+WHERE department_id = 50
+  AND employee_id NOT IN (
+      SELECT manager_id
+      FROM hr.employees
+  );
+SELECT e.employee_id, e.first_name, e.last_name
+FROM hr.employees e
+WHERE e.department_id = 50
+  AND NOT EXISTS (
+      SELECT 1
+      FROM hr.employees b
+      WHERE b.manager_id = e.employee_id
+  );
